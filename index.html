@@ -3,7 +3,6 @@
 <head>
     <title>My Web Page</title>
     <style>
-        /* Add your CSS styles here */
         header img {
             width: 100px;
             height: auto;
@@ -17,10 +16,66 @@
 
     <iframe src="https://thunkable.site/w/NI6iCVdBw-uYT-aSZleIK" style="width:100%; height:500px;"></iframe>
 
-    <script type="module" src="firebaseProfileApp.js"></script>
+    <table id="user-profiles-table">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Photo</th>
+            <th>Job</th>
+            <th>Relationship Status</th>
+            <th>Bio</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-    <div id="usersContainer">
-        <!-- User profiles will be displayed here -->
-      </div>
+    <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+            import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
+            const firebaseConfig = {
+                apiKey: "AIzaSyDeZu3QpIaCjvhcnEMu_VLEWwe4gfkdmO0",
+                authDomain: "profileapp-d785c.firebaseapp.com",
+                databaseURL: "https://profileapp-d785c-default-rtdb.firebaseio.com",
+                projectId: "profileapp-d785c",
+                storageBucket: "profileapp-d785c.appspot.com",
+                messagingSenderId: "1069550700514",
+                appId: "1:1069550700514:web:9a1fa2b6ee4472519e1bbb",
+                measurementId: "G-B632C3EPR7"
+            };
+        
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const database = getDatabase(app);
+        
+            const rootRef = ref(database);
+
+            onValue(rootRef, (snapshot) => {
+                const data = snapshot.val();
+                const tbody = document.querySelector('#user-profiles-table tbody');
+                tbody.innerHTML = ''; 
+                Object.keys(data).forEach((key) => {
+                    if (key !== 'highScore') { 
+                        const user = data[key];
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = user.name || 'N/A';
+                        const imgCell = row.insertCell(1);
+                        const image = new Image();
+                        image.src = user.image;
+                        image.alt = 'User Photo';
+                        image.width = 100; // Set the image size
+                        imgCell.appendChild(image);
+                        row.insertCell(2).textContent = user.movie || 'N/A';
+                        row.insertCell(3).textContent = user.song || 'N/A';
+                        row.insertCell(4).textContent = user.color || 'N/A';
+                    }
+                });
+            }, {
+                onlyOnce: true
+            });
+        </script>
 </body>
 </html>
